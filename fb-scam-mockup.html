@@ -735,7 +735,7 @@ function renderPost(post, index){
   const mediaHtml = post.video
     ? `<video class="post-image" src="${post.video}" ${post.image ? `poster="${post.image}"` : ""} autoplay muted loop playsinline controls></video>`
     : post.image
-      ? `<img class="post-image" src="ad-video.mp4" alt="Post image" loading="lazy" onerror="this.style.display='none'">`
+      ? `<img class="post-image" src="${post.image}" alt="Post image" loading="lazy" onerror="this.style.display='none'">`
       : "";
 
   return `
