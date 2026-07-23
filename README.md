@@ -1,1 +1,1039 @@
-# fb-scam-mockup
+[fb_clone_mobile.html](https://github.com/user-attachments/files/30287779/fb_clone_mobile.html)
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  FACEBOOK-STYLE MOBILE UI MOCKUP  —  built for video production / B-roll use
+  ============================================================================
+  This is an original recreation of the Facebook mobile app/mobile-web layout
+  (colors, spacing, type, structure) for use as a mockup in video editing.
+  It is NOT affiliated with or endorsed by Meta/Facebook, and uses no
+  copyrighted logo assets — just a similar circular "f" mark for likeness.
+
+  TWO WAYS THIS RENDERS
+  -----------------------
+  1. On a desktop browser: shows a centered "phone" frame (390x844, iPhone-
+     sized) on a dark backdrop — handy if you want to screen-record or crop
+     to just that rectangle for a vertical video.
+  2. Opened directly on an actual phone (or narrow browser window ≤480px):
+     the frame drops away and the app fills the whole screen edge-to-edge,
+     like a real mobile page.
+
+  HOW TO CUSTOMIZE
+  -----------------
+  1. Scroll to "CUSTOMIZE YOUR POSTS HERE" inside the <script> tag — same
+     format as the desktop version, one object per post in the POSTS array.
+  2. Stories are in the STORIES array right below it.
+  3. Save and refresh. No build step.
+
+  Avatars / photos use i.pravatar.cc and picsum.photos placeholder services,
+  which need an internet connection. For fully offline use, point `avatar` /
+  `image` / `photo` fields at local files instead, e.g. "images/1.jpg".
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>facebook</title>
+<style>
+  :root{
+    --bg:#F0F2F5;
+    --card:#FFFFFF;
+    --text:#050505;
+    --subtext:#65676B;
+    --blue:#1877F2;
+    --blue-tint:#E7F3FF;
+    --green:#42B72A;
+    --divider:#E4E6EB;
+    --hover:#F2F2F2;
+    --icon-bg:#F0F2F5;
+    --red:#F02849;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    color:var(--text);
+  }
+
+  a{ text-decoration:none; color:inherit; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  img{ display:block; max-width:100%; }
+
+  /* ============================= BACKDROP + PHONE FRAME ================= */
+  .backdrop{
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 0%, #3a3f44, #17181a 72%);
+    padding:40px 16px;
+  }
+
+  .phone-frame{
+    width:390px;
+    height:844px;
+    background:var(--bg);
+    border-radius:44px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 10px #111, 0 0 0 12px #333;
+    flex-shrink:0;
+  }
+
+  .phone-screen{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+  }
+
+  /* ============================= STATUS BAR ============================= */
+  .status-bar{
+    flex:0 0 auto;
+    height:44px;
+    background:var(--card);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 24px;
+    font-size:15px;
+    font-weight:600;
+    z-index:5;
+  }
+  .status-bar .icons{ display:flex; align-items:center; gap:5px; color:var(--text); }
+  .status-bar svg{ display:block; }
+
+  /* ============================= APP TOP BAR ============================= */
+  .app-topbar{
+    flex:0 0 auto;
+    height:48px;
+    background:var(--card);
+    border-bottom:1px solid var(--divider);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 10px;
+  }
+  .fb-logo-sm{
+    width:32px; height:32px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:19px; font-family:Georgia,'Times New Roman',serif;
+  }
+  .topbar-actions{ display:flex; gap:6px; }
+  .circle-btn{
+    width:34px; height:34px; border-radius:50%;
+    background:var(--icon-bg);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text);
+    position:relative;
+  }
+  .circle-btn .badge{
+    position:absolute; top:-2px; right:-2px;
+    background:var(--red); color:#fff;
+    font-size:10px; font-weight:700;
+    min-width:14px; height:14px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 3px;
+    border:2px solid var(--card);
+  }
+
+  /* ============================= SCROLL AREA ============================= */
+  .scroll-area{
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    background:var(--bg);
+    scroll-behavior:smooth;
+  }
+  .scroll-area::-webkit-scrollbar{ width:0; }
+
+  /* ============================= STORIES ============================= */
+  .stories-row{
+    display:flex;
+    gap:6px;
+    padding:8px;
+    overflow-x:auto;
+    background:var(--card);
+    margin-bottom:8px;
+  }
+  .stories-row::-webkit-scrollbar{ display:none; }
+
+  .story-card{
+    flex:0 0 100px;
+    height:172px;
+    border-radius:10px;
+    position:relative;
+    overflow:hidden;
+    background-size:cover;
+    background-position:center;
+    color:#fff;
+    flex-shrink:0;
+  }
+  .story-card::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:60%;
+    background:linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.55));
+  }
+  .story-avatar{
+    position:absolute; top:8px; left:8px;
+    width:32px; height:32px; border-radius:50%;
+    border:3px solid var(--blue);
+    object-fit:cover;
+    z-index:2;
+  }
+  .story-name{
+    position:absolute; bottom:8px; left:8px; right:8px;
+    font-size:12.5px; font-weight:600;
+    z-index:2;
+    text-shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  .story-card.create-story{
+    background:var(--card);
+    display:flex; flex-direction:column;
+    color:var(--text);
+  }
+  .create-story .story-photo{
+    height:70%; width:100%; object-fit:cover;
+  }
+  .create-story .plus-wrap{
+    position:absolute; left:50%; top:70%; transform:translate(-50%,-50%);
+    width:32px; height:32px; border-radius:50%;
+    background:var(--blue); border:3px solid var(--card);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+    z-index:2;
+  }
+  .create-story .label{
+    height:30%;
+    display:flex; align-items:flex-end; justify-content:center;
+    padding-bottom:8px;
+    font-size:12px; font-weight:700; color:var(--text);
+    text-align:center;
+  }
+
+  /* ============================= CREATE POST ============================= */
+  .create-post-mobile{
+    background:var(--card);
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .cpm-top{ display:flex; align-items:center; gap:8px; }
+  .cpm-top img{ width:36px; height:36px; border-radius:50%; object-fit:cover; }
+  .cpm-input{
+    flex:1;
+    background:var(--bg);
+    border-radius:20px;
+    padding:9px 14px;
+    font-size:15px;
+    color:var(--subtext);
+  }
+  .cpm-divider{ height:1px; background:var(--divider); margin:10px 0 6px; }
+  .cpm-actions{ display:flex; }
+  .cpm-action{
+    flex:1;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:7px 4px;
+    border-radius:6px;
+    color:var(--subtext); font-weight:600; font-size:13.5px;
+  }
+  .cpm-action svg{ width:18px; height:18px; }
+
+  /* ============================= POST CARDS ============================= */
+  .post-card{
+    background:var(--card);
+    margin-bottom:8px;
+  }
+  .post-card.post-incoming{
+    opacity:0;
+    transform:translateY(-18px);
+    background:var(--blue-tint);
+  }
+  .post-card.post-incoming-active{
+    opacity:1;
+    transform:translateY(0);
+    transition:opacity .4s ease, transform .4s ease, background-color 1.1s ease .3s;
+    background:var(--card);
+  }
+  .post-header{ display:flex; align-items:flex-start; justify-content:space-between; padding:10px 12px 0; }
+  .post-header-left{ display:flex; gap:8px; }
+  .post-header img.avatar{ width:38px; height:38px; border-radius:50%; object-fit:cover; }
+  .post-name{ font-size:14.5px; font-weight:600; line-height:1.3; }
+  .post-meta{ font-size:12.5px; color:var(--subtext); display:flex; align-items:center; gap:4px; }
+  .post-meta svg{ width:12px; height:12px; }
+  .post-header-actions{ display:flex; align-items:center; }
+  .round-btn{ width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--subtext); }
+
+  .post-text{ padding:8px 12px 10px; font-size:14.5px; line-height:1.35; white-space:pre-wrap; }
+  .post-image{ width:100%; max-height:420px; object-fit:cover; background:#e4e6eb; }
+
+  .post-stats{ display:flex; align-items:center; justify-content:space-between; padding:7px 12px; font-size:13px; color:var(--subtext); }
+  .likes-cluster{ display:flex; align-items:center; gap:4px; }
+  .reaction-icons{ display:flex; }
+  .reaction-icons .r{ width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid var(--card); margin-left:-5px; }
+  .reaction-icons .r:first-child{ margin-left:0; z-index:2; }
+  .r.thumb{ background:var(--blue); }
+  .r.heart{ background:var(--red); }
+  .r svg{ width:9px; height:9px; color:#fff; }
+  .stats-right{ display:flex; gap:8px; }
+
+  .post-divider{ height:1px; background:var(--divider); margin:2px 12px; }
+
+  .post-actions{ display:flex; padding:2px 6px 6px; }
+  .post-action-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:7px 2px; margin:0 2px; border-radius:6px;
+    color:var(--subtext); font-weight:600; font-size:13px;
+    transition:color .15s ease, transform .1s ease, background-color .15s ease;
+  }
+  .post-action-btn svg{ width:18px; height:18px; }
+  .post-action-btn:hover{ background:var(--hover); }
+  .post-action-btn:active{ transform:scale(.94); }
+  .post-action-btn.liked{ color:var(--blue); }
+  .post-action-btn.liked svg{ fill:var(--blue); }
+  .post-action-btn .reaction-emoji{ font-size:15px; line-height:1; }
+  /* brief "pop" on reaction change, for that native app feel */
+  @keyframes reactionPop{ 0%{ transform:scale(1); } 45%{ transform:scale(1.18); } 100%{ transform:scale(1); } }
+  .post-action-btn.reaction-pop{ animation:reactionPop .32s ease; }
+
+  /* ---- reaction picker (hover on desktop / long-press on touch) ---- */
+  .like-action-wrap{ position:relative; flex:1; display:flex; }
+  .like-action-wrap .post-action-btn{ flex:1; margin:0 2px; }
+  .reaction-popup{
+    position:absolute; left:0; bottom:calc(100% + 8px);
+    display:flex; gap:2px;
+    background:var(--card);
+    padding:6px 8px;
+    border-radius:30px;
+    box-shadow:0 8px 22px rgba(0,0,0,.22), 0 1px 4px rgba(0,0,0,.12);
+    opacity:0; pointer-events:none;
+    transform:translateY(10px) scale(.85);
+    transform-origin:bottom left;
+    transition:opacity .16s ease, transform .18s cubic-bezier(.34,1.56,.64,1);
+    z-index:30;
+  }
+  .reaction-popup.show{ opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+  .reaction-popup .r-emoji{
+    font-size:26px; line-height:1; padding:4px 5px;
+    display:inline-block; cursor:pointer;
+    transform-origin:bottom center;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1);
+  }
+  .reaction-popup .r-emoji:hover,
+  .reaction-popup .r-emoji.active{ transform:scale(1.45) translateY(-8px); }
+
+  /* ---- comment list ---- */
+  .comment-list{ padding:0 12px; display:flex; flex-direction:column; gap:8px; }
+  .comment-item{
+    display:flex; gap:8px; align-items:flex-start;
+    opacity:0; transform:translateY(6px);
+    transition:opacity .22s ease, transform .22s ease;
+  }
+  .comment-item.show{ opacity:1; transform:translateY(0); }
+  .comment-item img{ width:28px; height:28px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
+  .comment-bubble{
+    background:var(--bg); border-radius:16px; padding:7px 12px;
+    font-size:13.5px; line-height:1.35; max-width:100%;
+    word-break:break-word;
+  }
+  .comment-bubble .c-name{ display:block; font-weight:600; font-size:12.5px; margin-bottom:1px; }
+  .comment-list:not(:empty){ padding-bottom:8px; }
+
+  .comment-row{ display:flex; align-items:center; gap:8px; padding:0 12px 12px; }
+  .comment-row img{ width:28px; height:28px; border-radius:50%; object-fit:cover; }
+  .comment-row input{ flex:1; background:var(--bg); border:none; border-radius:18px; padding:8px 12px; font-size:13.5px; outline:none; }
+  .comment-send-btn{
+    flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--blue);
+    transition:transform .12s ease, background-color .12s ease;
+  }
+  .comment-send-btn svg{ width:17px; height:17px; }
+  .comment-send-btn:hover{ background:var(--blue-tint); transform:scale(1.08); }
+  .comment-send-btn:active{ transform:scale(.9); }
+
+  /* ============================= BOTTOM NAV ============================= */
+  .bottom-nav{
+    flex:0 0 auto;
+    height:50px;
+    background:var(--card);
+    border-top:1px solid var(--divider);
+    display:flex;
+    align-items:stretch;
+  }
+  .nav-btn{
+    flex:1;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--subtext);
+    position:relative;
+  }
+  .nav-btn svg{ width:25px; height:25px; }
+  .nav-btn.active{ color:var(--blue); }
+  .nav-btn.active::before{
+    content:"";
+    position:absolute; top:0; left:20%; right:20%;
+    height:2.5px; background:var(--blue); border-radius:2px;
+  }
+  .nav-btn .dot{
+    position:absolute; top:8px; right:24%;
+    width:8px; height:8px; border-radius:50%;
+    background:var(--red); border:2px solid var(--card);
+  }
+
+  .home-indicator{
+    flex:0 0 auto;
+    height:22px;
+    background:var(--card);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .home-indicator .bar{ width:134px; height:5px; border-radius:3px; background:#000; opacity:.85; }
+
+  /* ============================= TOAST ============================= */
+  #toast{
+    position:absolute; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:#1c1e21; color:#fff; padding:9px 16px; border-radius:8px;
+    font-size:13px; font-weight:600; opacity:0; pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    z-index:50;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* Scam link styling */
+  .scam-link{ color:var(--blue); font-weight:700; text-decoration:underline; cursor:pointer; }
+
+  /* Modal warning overlay for educational alert */
+  .scam-modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:120; }
+  .scam-modal.open{ display:flex; }
+  .scam-modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.56); }
+  .scam-modal-content{ position:relative; background:var(--card); padding:20px; width:92%; max-width:420px; border-radius:12px; z-index:2; box-shadow:0 10px 30px rgba(0,0,0,.35); text-align:center; }
+  .scam-modal-content h2{ margin:0 0 8px; font-size:18px; }
+  .scam-modal-content p{ color:var(--subtext); margin-bottom:16px; }
+  #dismissModalBtn{ background:var(--blue); color:#fff; padding:10px 14px; border-radius:8px; font-weight:700; border:0; }
+
+  /* ============================= REAL-PHONE MODE ============================= */
+  /* If this page is actually opened on a phone (or a narrow browser window),
+     drop the frame/bezel and fill the real screen edge-to-edge. */
+  @media (max-width:480px){
+    .backdrop{ padding:0; background:var(--bg); min-height:100dvh; }
+    .phone-frame{
+      width:100vw; height:100vh; height:100dvh;
+      border-radius:0; box-shadow:none;
+    }
+    .status-bar{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop">
+  <div class="phone-frame">
+    <div class="phone-screen">
+
+      <!-- Fake status bar — purely cosmetic, hidden automatically on a real phone -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="icons">
+          <svg viewBox="0 0 20 12" width="18" height="11"><rect x="0" y="8" width="3" height="4" rx="0.5" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.5" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 20 16" width="16" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6a13 13 0 0 1 16 0"/><path d="M5 9.5a8.5 8.5 0 0 1 10 0"/><path d="M8 13a4 4 0 0 1 4 0"/></svg>
+          <svg viewBox="0 0 28 14" width="24" height="12"><rect x="1" y="1" width="24" height="12" rx="3" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="3" y="3" width="19" height="8" rx="1.5" fill="currentColor"/><rect x="26" y="4.5" width="2" height="5" rx="1" fill="currentColor"/></svg>
+        </span>
+      </div>
+
+      <!-- App top bar -->
+      <div class="app-topbar">
+        <div class="fb-logo-sm">f</div>
+        <div class="topbar-actions">
+          <button class="circle-btn" title="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <button class="circle-btn" title="Messenger">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-3.8-.9L3 21l1.9-5.8a8.3 8.3 0 0 1-.9-3.7A8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg>
+            <span class="badge">3</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="scroll-area">
+        <div class="stories-row" id="storiesRow"></div>
+
+        <div class="create-post-mobile">
+          <div class="cpm-top">
+            <img src="https://i.pravatar.cc/150?img=12" alt="Javier Lopez">
+            <div class="cpm-input">What's on your mind?</div>
+          </div>
+          <div class="cpm-divider"></div>
+          <div class="cpm-actions">
+            <button class="cpm-action">
+              <svg style="color:#F02849;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Live
+            </button>
+            <button class="cpm-action">
+              <svg style="color:#45BD62;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Photo
+            </button>
+          </div>
+        </div>
+
+        <div id="postsFeed"></div>
+      </div>
+
+      <!-- Bottom tab bar -->
+      <div class="bottom-nav">
+        <button class="nav-btn active" title="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        </button>
+        <button class="nav-btn" title="Friends">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+        </button>
+        <button class="nav-btn" title="Watch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </button>
+        <button class="nav-btn" title="Marketplace">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </button>
+        <button class="nav-btn" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+          <span class="dot"></span>
+        </button>
+      </div>
+
+      <div class="home-indicator"><div class="bar"></div></div>
+
+      <div id="toast"></div>
+      <!-- Educational warning modal (hidden until a simulated scam link is clicked) -->
+      <div id="scamModal" class="scam-modal" aria-hidden="true">
+        <div class="scam-modal-backdrop" aria-hidden="true"></div>
+        <div class="scam-modal-content" role="dialog" aria-modal="true" aria-labelledby="scamModalTitle">
+          <h2 id="scamModalTitle">⚠️ SIMULATED PHISHING WARNING</h2>
+          <p>ACCOUNT COMPROMISED! In a real scam, clicking suspicious links and entering details puts your account at risk.</p>
+          <button id="dismissModalBtn">Dismiss / Back to Feed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   CUSTOMIZE YOUR POSTS HERE  (same format as the desktop version)
+   ----------------------------------------------------------------------------
+   Each post supports an optional `video` field. If `video` is set, the post
+   renders an HTML5 <> player instead of a static <img>, using `image`
+   as the poster frame. Point it at a local file next to this HTML file,
+   e.g. video: "videos/jim-scene1.mp4"  (leave `video: null` for image posts).
+
+   Each post also supports an optional `appearAt` field: a number of seconds
+   after the page loads before that post shows up at the top of the feed
+   with a slide-in highlight, for timing a post to your voiceover/script.
+   Leave `appearAt` unset (or 0) for posts that should just be there from
+   the start, like the rest of the feed below.
+============================================================================ */
+const POSTS = [
+  {
+    name: "Sarah Mitchell",
+    avatar: "https://i.pravatar.cc/150?img=5",
+    time: "2 hrs",
+    privacy: "globe",
+    text: "Finally finished the kitchen renovation! 6 months of dust and takeout food but so worth it 😍 Swipe to see the before/after.",
+    image: "https://picsum.photos/seed/post1/800/500",
+    likes: 248,
+    comments: 37,
+    shares: 5
+  },
+  {
+    name: "James Chen",
+    avatar: "https://i.pravatar.cc/150?img=15",
+    time: "4 hrs",
+    privacy: "friends",
+    text: "Hot take: pineapple on pizza is actually fine and you're all just being dramatic. Fight me in the comments.",
+    image: null,
+    likes: 892,
+    comments: 214,
+    shares: 12
+  },
+  {
+    name: "Priya Patel",
+    avatar: "https://i.pravatar.cc/150?img=32",
+    time: "6 hrs",
+    privacy: "globe",
+    text: "Sunrise hike up to Eagle Point this morning. Cold, tired, worth every step. 🌄",
+    image: "https://picsum.photos/seed/post2/800/500",
+    likes: 431,
+    comments: 28,
+    shares: 9
+  },
+  {
+    name: "Marcus Johnson",
+    avatar: "https://i.pravatar.cc/150?img=52",
+    time: "8 hrs",
+    privacy: "globe",
+    text: "PSA: the new bakery on 5th street does a cinnamon roll the size of your head. You've been warned.",
+    image: "https://picsum.photos/seed/post3/800/500",
+    likes: 156,
+    comments: 19,
+    shares: 3
+  },
+  {
+    name: "Local Runners Club",
+    avatar: "https://i.pravatar.cc/150?img=60",
+    time: "10 hrs",
+    privacy: "globe",
+    text: "Saturday's 5K fundraiser raised over $3,200 for the community center! Thank you to everyone who came out, rain and all.",
+    image: "https://picsum.photos/seed/post4/800/500",
+    likes: 512,
+    comments: 44,
+    shares: 21
+  },
+  {
+    name: "Emily Nakamura",
+    avatar: "https://i.pravatar.cc/150?img=45",
+    time: "12 hrs",
+    privacy: "friends",
+    text: "Two years at the new job today. Still can't believe I get paid to do something I actually love.",
+    image: null,
+    likes: 673,
+    comments: 91,
+    shares: 4
+  },
+  {
+    name: "David Kowalski",
+    avatar: "https://i.pravatar.cc/150?img=68",
+    time: "Yesterday at 6:40 PM",
+    privacy: "globe",
+    text: "Rebuilt my old bike from scratch this weekend. New chain, new brakes, fresh paint. Runs better than it did new.",
+    image: "https://picsum.photos/seed/post5/800/500",
+    likes: 289,
+    comments: 22,
+    shares: 6
+  },
+  {
+    name: "Green Thumb Gardening Co.",
+    avatar: "https://i.pravatar.cc/150?img=25",
+    time: "Yesterday at 11:15 AM",
+    privacy: "globe",
+    text: "Tomato season is almost here! Drop your favorite variety in the comments — we're giving away 5 seed packs on Friday.",
+    image: "https://picsum.photos/seed/post6/800/500",
+    likes: 1024,
+    comments: 356,
+    shares: 48
+  }
+  ,
+  {
+    // Scam/clickbait post is now placed **with the rest of the feed** so it
+    // appears naturally as the user scrolls (no timer). Video src points to
+    // the local file provided so it plays in the feed.
+    name: "Free GCash Rewards / Tech Support",
+    avatar: "https://i.pravatar.cc/150?img=12",
+    time: "Sponsored",
+    privacy: "globe",
+    text: "OMG MY FRIEND!! 😱 ₱5000 FREE BALANCE INSTANTLY! 💸 DON'T MISS THIS OFFER MY FRIEND! 👇 CLICK LINK BELOW 👇",
+    image: null,
+    video: "https://streamable.com/hizzvi",
+    likes: 1200,
+    comments: 458,
+    shares: 89
+  }
+];
+
+/* ============================================================================
+   STORIES — horizontal row at the top of the feed
+   fields: name, avatar (small ring photo), photo (full story background)
+============================================================================ */
+const STORIES = [
+  { name: "James Chen",      avatar: "https://i.pravatar.cc/150?img=15", photo: "https://picsum.photos/seed/story1/300/500" },
+  { name: "Priya Patel",     avatar: "https://i.pravatar.cc/150?img=32", photo: "https://picsum.photos/seed/story2/300/500" },
+  { name: "Marcus Johnson",  avatar: "https://i.pravatar.cc/150?img=52", photo: "https://picsum.photos/seed/story3/300/500" },
+  { name: "Emily Nakamura",  avatar: "https://i.pravatar.cc/150?img=45", photo: "https://picsum.photos/seed/story4/300/500" },
+  { name: "David Kowalski",  avatar: "https://i.pravatar.cc/150?img=68", photo: "https://picsum.photos/seed/story5/300/500" },
+  { name: "Nina Torres",     avatar: "https://i.pravatar.cc/150?img=48", photo: "https://picsum.photos/seed/story6/300/500" }
+];
+
+/* ============================================================================
+   Rendering logic below — no need to touch this to customize content.
+============================================================================ */
+const ICONS = {
+  globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  friends: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`,
+  more: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
+  close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  thumb: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.3a2 2 0 0 0 2-1.7l1.4-9a2 2 0 0 0-2-2.3H14Z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3v11Z"/></svg>`,
+  thumbOutline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.3a2 2 0 0 0 2-1.7l1.4-9a2 2 0 0 0-2-2.3H14Z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>`,
+  comment: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`
+};
+
+/* ============================================================================
+   REACTIONS — the six standard reaction types shown in the picker popup.
+============================================================================ */
+const REACTIONS = [
+  { key: "like",  emoji: "👍", label: "Like",  color: "#1877F2" },
+  { key: "love",  emoji: "❤️", label: "Love",  color: "#F02849" },
+  { key: "haha",  emoji: "😆", label: "Haha",  color: "#F7B125" },
+  { key: "wow",   emoji: "😮", label: "Wow",   color: "#F7B125" },
+  { key: "sad",   emoji: "😢", label: "Sad",   color: "#F7B125" },
+  { key: "angry", emoji: "😡", label: "Angry", color: "#E9710F" }
+];
+
+function reactionByKey(key){ return REACTIONS.find(r => r.key === key) || null; }
+
+function reactionButtonHTML(reactionKey){
+  const r = reactionByKey(reactionKey);
+  if (!r) return `${ICONS.thumbOutline} Like`;
+  return `<span class="reaction-emoji">${r.emoji}</span> ${r.label}`;
+}
+
+function renderReactionPopup(){
+  return `<div class="reaction-popup" data-role="reaction-popup">
+    ${REACTIONS.map(r => `<span class="r-emoji" data-reaction="${r.key}" title="${r.label}">${r.emoji}</span>`).join("")}
+  </div>`;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatCount(n){
+  if (n >= 1000) return (n/1000).toFixed(n % 1000 >= 100 ? 1 : 0) + "K";
+  return String(n);
+}
+
+/* Render post text and convert the scam/link phrase into a clickable element */
+function renderPostText(post, index){
+  const raw = post.text || "";
+  const linkPhrase = '👇 CLICK LINK BELOW 👇';
+  const escaped = escapeHtml(raw);
+  if (escaped.indexOf(linkPhrase) !== -1){
+    // replace all occurrences with an anchor that triggers the educational modal
+    return escaped.split(linkPhrase).join(`<a href="#" class="scam-link" data-scam-index="${index}">${linkPhrase}</a>`);
+  }
+  return escaped;
+}
+
+function renderStory(s, i){
+  if (i === -1){
+    return `
+    <div class="story-card create-story">
+      <img class="story-photo" src="https://i.pravatar.cc/150?img=12" alt="Javier Lopez">
+      <span class="plus-wrap">${ICONS.plus}</span>
+      <div class="label">Create story</div>
+    </div>`;
+  }
+  return `
+  <div class="story-card" style="background-image:url('${s.photo}')">
+    <img class="story-avatar" src="${s.avatar}" alt="${escapeHtml(s.name)}">
+    <div class="story-name">${escapeHtml(s.name)}</div>
+  </div>`;
+}
+
+function renderPost(post, index){
+  const privacyIcon = post.privacy === "friends" ? ICONS.friends : ICONS.globe;
+  const mediaHtml = post.video
+    ? `<video class="post-image" src="${post.video}" ${post.image ? `poster="${post.image}"` : ""} autoplay muted loop playsinline controls></video>`
+    : post.image
+      ? `<img class="post-image" src="https://streamable.com/hizzvi" alt="Post image" loading="lazy" onerror="this.style.display='none'">`
+      : "";
+
+  return `
+  <article class="post-card" data-index="${index}">
+    <div class="post-header">
+      <div class="post-header-left">
+        <img class="avatar" src="${post.avatar}" alt="${escapeHtml(post.name)}">
+        <div>
+          <div class="post-name">${escapeHtml(post.name)}</div>
+          <div class="post-meta"><span>${escapeHtml(post.time)}</span> · ${privacyIcon}</div>
+        </div>
+      </div>
+      <div class="post-header-actions">
+        <button class="round-btn" title="More options">${ICONS.more}</button>
+      </div>
+    </div>
+
+    <div class="post-text">${renderPostText(post, index)}</div>
+    ${mediaHtml}
+
+    <div class="post-stats">
+      <div class="likes-cluster">
+        <div class="reaction-icons">
+          <span class="r thumb">${ICONS.thumb}</span>
+          <span class="r heart">${ICONS.heart}</span>
+        </div>
+        <span data-role="likes-count">${formatCount(post.likes)}</span>
+      </div>
+      <div class="stats-right">
+        <span data-role="comments-count">${formatCount(post.comments)} comments</span>
+        <span data-role="shares-count">${formatCount(post.shares)} shares</span>
+      </div>
+    </div>
+
+    <div class="post-divider"></div>
+
+    <div class="post-actions">
+      <div class="like-action-wrap">
+        <button class="post-action-btn" data-action="like">${reactionButtonHTML(post._reaction)}</button>
+        ${renderReactionPopup()}
+      </div>
+      <button class="post-action-btn" data-action="comment">${ICONS.comment} Comment</button>
+      <button class="post-action-btn" data-action="share">${ICONS.share} Share</button>
+    </div>
+
+    <div class="comment-list" data-role="comment-list"></div>
+
+    <div class="comment-row">
+      <img src="https://i.pravatar.cc/150?img=12" alt="Javier Lopez">
+      <input type="text" placeholder="Write a comment..." data-role="comment-input">
+      <button class="comment-send-btn" data-role="comment-send" title="Send">${ICONS.send}</button>
+    </div>
+  </article>`;
+}
+
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 1600);
+}
+
+function insertDelayedPost(index){
+  const feed = document.getElementById('postsFeed');
+  if (!feed || feed.querySelector(`[data-index="${index}"]`)) return; // already inserted
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = renderPost(POSTS[index], index).trim();
+  const el = wrapper.firstElementChild;
+  el.classList.add('post-incoming');
+  feed.insertBefore(el, feed.firstChild);
+
+  // next frame: animate in (slide down + fade + brief highlight)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => el.classList.add('post-incoming-active'));
+  });
+  setTimeout(() => el.classList.remove('post-incoming', 'post-incoming-active', 'post-highlight'), 1400);
+}
+
+/* Modal control for the simulated-phishing educational overlay */
+function showScamModal(){
+  const modal = document.getElementById('scamModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  // prevent body scroll while modal is open on small screens
+  document.documentElement.style.overflow = 'hidden';
+  const btn = document.getElementById('dismissModalBtn');
+  if (btn) btn.focus();
+}
+
+function hideScamModal(){
+  const modal = document.getElementById('scamModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.documentElement.style.overflow = '';
+}
+
+/* ============================================================================
+   REACTIONS + COMMENTS — runtime behavior
+============================================================================ */
+function hideAllPopups(){
+  document.querySelectorAll('.reaction-popup.show').forEach(p => p.classList.remove('show'));
+}
+
+function updateReactionUI(post, card){
+  const total = post._baseLikes + (post._reaction ? 1 : 0);
+  card.querySelector('[data-role="likes-count"]').textContent = formatCount(total);
+
+  const btn = card.querySelector('.post-action-btn[data-action="like"]');
+  btn.innerHTML = reactionButtonHTML(post._reaction);
+  const meta = reactionByKey(post._reaction);
+  btn.style.color = meta ? meta.color : "";
+  btn.classList.remove('reaction-pop');
+  void btn.offsetWidth; // restart the pop animation
+  btn.classList.add('reaction-pop');
+}
+
+/* Plain tap/click on the Like button itself: toggles the default "Like"
+   reaction on or off. */
+function handleLikeClick(post, card){
+  post._reaction = post._reaction ? null : "like";
+  updateReactionUI(post, card);
+}
+
+/* Picking a specific reaction from the popup bar: selecting the reaction
+   that's already active removes it, otherwise it becomes (or replaces)
+   the post's reaction. */
+function handleReactionSelect(post, card, key){
+  post._reaction = (post._reaction === key) ? null : key;
+  updateReactionUI(post, card);
+  hideAllPopups();
+}
+
+function attachReactionHandlers(card, post){
+  const wrap = card.querySelector('.like-action-wrap');
+  const btn = wrap.querySelector('.post-action-btn[data-action="like"]');
+  const popup = wrap.querySelector('[data-role="reaction-popup"]');
+
+  let pressTimer = null;
+  let hoverTimer = null;
+  let hideTimer = null;
+  let longPressTriggered = false;
+
+  const openPopup = () => { hideAllPopups(); popup.classList.add('show'); };
+  const closePopup = () => popup.classList.remove('show');
+
+  const startPress = () => {
+    longPressTriggered = false;
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => { longPressTriggered = true; openPopup(); }, 450);
+  };
+  const cancelPress = () => clearTimeout(pressTimer);
+
+  // long-press (touch) / press-and-hold (mouse)
+  btn.addEventListener('mousedown', startPress);
+  btn.addEventListener('mouseup', cancelPress);
+  btn.addEventListener('touchstart', startPress, { passive:true });
+  btn.addEventListener('touchend', cancelPress);
+
+  // hover-to-open, desktop mouse
+  wrap.addEventListener('mouseenter', () => {
+    clearTimeout(hideTimer);
+    hoverTimer = setTimeout(openPopup, 380);
+  });
+  wrap.addEventListener('mouseleave', () => {
+    clearTimeout(hoverTimer);
+    hideTimer = setTimeout(closePopup, 350);
+  });
+  popup.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  popup.addEventListener('mouseleave', () => { hideTimer = setTimeout(closePopup, 250); });
+
+  btn.addEventListener('click', () => {
+    if (longPressTriggered){ longPressTriggered = false; return; } // popup is open, awaiting a pick
+    handleLikeClick(post, card);
+  });
+
+  popup.querySelectorAll('.r-emoji').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleReactionSelect(post, card, el.dataset.reaction);
+    });
+  });
+}
+
+function submitComment(card, post){
+  const input = card.querySelector('[data-role="comment-input"]');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const list = card.querySelector('[data-role="comment-list"]');
+  const item = document.createElement('div');
+  item.className = 'comment-item';
+  item.innerHTML = `
+    <img src="https://i.pravatar.cc/150?img=12" alt="Javier Lopez">
+    <div class="comment-bubble"><span class="c-name">Javier Lopez</span>${escapeHtml(text)}</div>`;
+  list.appendChild(item);
+  requestAnimationFrame(() => item.classList.add('show'));
+
+  input.value = '';
+  post.comments += 1;
+  card.querySelector('[data-role="comments-count"]').textContent = formatCount(post.comments) + " comments";
+}
+
+function attachPostHandlers(card, post){
+  if (post.simulated){
+    // Educational scam/phishing-simulation post: reactions and comments are
+    // intentionally left non-functional here (clicking surfaces the same
+    // phishing warning as the in-text link) rather than letting its
+    // engagement numbers grow interactively — see note below the POSTS array.
+    const likeBtn = card.querySelector('.post-action-btn[data-action="like"]');
+    const input = card.querySelector('[data-role="comment-input"]');
+    if (likeBtn) likeBtn.addEventListener('click', showScamModal);
+    if (input) input.addEventListener('focus', showScamModal);
+    return;
+  }
+
+  attachReactionHandlers(card, post);
+
+  const sendBtn = card.querySelector('[data-role="comment-send"]');
+  const input = card.querySelector('[data-role="comment-input"]');
+  if (sendBtn) sendBtn.addEventListener('click', () => submitComment(card, post));
+  if (input) input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); submitComment(card, post); }
+  });
+}
+
+function init(){
+  // per-post runtime state for reactions: baseline like count + which
+  // reaction (if any) the viewer currently has selected
+  POSTS.forEach(p => { p._reaction = null; p._baseLikes = p.likes; });
+
+  // stories: "create story" card first, then friends
+  const storiesRow = document.getElementById('storiesRow');
+  storiesRow.innerHTML = renderStory(null, -1) + STORIES.map(renderStory).join("");
+
+  // posts: render the full POSTS array immediately so everything loads
+  // together and the scam post appears naturally as the user scrolls.
+  const feed = document.getElementById('postsFeed');
+  feed.innerHTML = POSTS.map((post, index) => renderPost(post, index)).join("");
+
+  feed.querySelectorAll('.post-card').forEach(card => {
+    const idx = Number(card.dataset.index);
+    attachPostHandlers(card, POSTS[idx]);
+  });
+
+  // close any open reaction popup when tapping/clicking elsewhere
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.like-action-wrap')) hideAllPopups();
+  });
+
+  // Attach delegated handlers for the educational scam-link modal and
+  // modal dismissal (backdrop / button / Escape key).
+  document.addEventListener('click', (e) => {
+    const scamLink = e.target.closest('.scam-link');
+    if (scamLink){
+      e.preventDefault();
+      showScamModal();
+    }
+    // backdrop click handled below via element matching
+    const backdrop = e.target.closest('.scam-modal-backdrop');
+    if (backdrop){
+      hideScamModal();
+    }
+  });
+
+  const dismissBtn = document.getElementById('dismissModalBtn');
+  if (dismissBtn) dismissBtn.addEventListener('click', hideScamModal);
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') hideScamModal(); });
+
+  feed.addEventListener('click', (e) => {
+    const btn = e.target.closest('.post-action-btn');
+    if (!btn) return;
+    const card = btn.closest('.post-card');
+    const idx = Number(card.dataset.index);
+    const post = POSTS[idx];
+    const action = btn.dataset.action;
+
+    if (action === 'like'){
+      const isLiked = btn.classList.toggle('liked');
+      post.likes += isLiked ? 1 : -1;
+      card.querySelector('[data-role="likes-count"]').textContent = formatCount(post.likes);
+    }
+    if (action === 'comment'){
+      card.querySelector('[data-role="comment-input"]').focus();
+    }
+    if (action === 'share'){
+      post.shares += 1;
+      card.querySelector('[data-role="shares-count"]').textContent = formatCount(post.shares) + " shares";
+      showToast("Post shared to your timeline");
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
