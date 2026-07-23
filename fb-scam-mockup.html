@@ -628,7 +628,7 @@ const POSTS = [
     privacy: "globe",
     text: "OMG MY FRIEND!! 😱 ₱5000 FREE BALANCE INSTANTLY! 💸 DON'T MISS THIS OFFER MY FRIEND! 👇 CLICK LINK BELOW 👇",
     image: null,
-    video: "C:\Users\aquin\Downloads\Jim (Scene 1 ad) (1).mp4",
+    video: "Jim (Scene 1 ad) (1).mp4",
     likes: 1200,
     comments: 458,
     shares: 89
@@ -735,7 +735,7 @@ function renderPost(post, index){
   const mediaHtml = post.video
     ? `<video class="post-image" src="${post.video}" ${post.image ? `poster="${post.image}"` : ""} autoplay muted loop playsinline controls></video>`
     : post.image
-      ? `<img class="post-image" src="C:\Users\aquin\Downloads\Jim (Scene 1 ad) (1).mp4" alt="Post image" loading="lazy" onerror="this.style.display='none'">`
+      ? `<img class="post-image" src="Jim (Scene 1 ad) (1).mp4" alt="Post image" loading="lazy" onerror="this.style.display='none'">`
       : "";
 
   return `
